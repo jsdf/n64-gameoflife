@@ -15,8 +15,6 @@
 #define CELLS_Y 40
 #define CELL_WIDTH_X 5
 #define CELL_WIDTH_Y 5
-// #define DEAD 0
-// #define ALIVE 1
 #define START_ZOOM 10.0f
 #define END_ZOOM 1.0f
 #define ZOOM_TIME 10.0f
@@ -25,7 +23,7 @@ void tick();
 float cubicOut(float t);
 float lerp(float v0, float v1, float t);
 void drawSquares(GraphicsTask* gfxTask);
-void initGrid();
+void initGrid(int);
 
 typedef enum CellState {
   DEAD,
@@ -43,6 +41,7 @@ float zoom;
 int ticks;
 int frame;
 int colormode;
+int fillThreshold;
 
 // the 'setup' function
 void initStage00() {
@@ -55,8 +54,8 @@ void initStage00() {
   ticks = 0;
   frame = 0;
   colormode = 0;
-
-  initGrid();
+  fillThreshold = 5;
+  initGrid(fillThreshold);
 }
 
 // the 'update' function
@@ -76,7 +75,8 @@ void updateGame00() {
   // is initially pressed. The contdata[0].button property is similar, but stays
   // on for the duration of the button press.
   if (contdata[0].trigger & A_BUTTON) {
-    initGrid();
+    fillThreshold = RAND(8) + 2;
+    initGrid(fillThreshold);
   }
   if (contdata[0].trigger & B_BUTTON) {
     colormode = !colormode;
@@ -154,15 +154,19 @@ void makeDL00() {
 
   if (DEBUG_CONSOLE) {
     char conbuf[100];
-    nuDebConTextPos(0, 12, 23);
+    int offset = 23;
+    nuDebConTextPos(0, 12, offset++);
     sprintf(conbuf, "retrace=%d, %d", (int)nuScRetraceCounter,
             ((int)nuScRetraceCounter % 2));
     nuDebConCPuts(0, conbuf);
-    nuDebConTextPos(0, 12, 24);
+    nuDebConTextPos(0, 12, offset++);
     sprintf(conbuf, "ticks=%d", ticks);
     nuDebConCPuts(0, conbuf);
-    nuDebConTextPos(0, 12, 25);
+    nuDebConTextPos(0, 12, offset++);
     sprintf(conbuf, "frame=%d", frame);
+    nuDebConCPuts(0, conbuf);
+    nuDebConTextPos(0, 12, offset++);
+    sprintf(conbuf, "fill=%d", fillThreshold);
     nuDebConCPuts(0, conbuf);
   }
 
@@ -300,10 +304,6 @@ void drawSquares(GraphicsTask* gfxTask) {
       }
       color = PACK_RGBA4444(rgbColor.r, rgbColor.g, rgbColor.b, 255);
 
-      // color =
-      //    ((int)(((col + 1) / (float)CELLS_X) * age * 255) << 24) +
-      //    ((int)((col + 1) / (float)CELLS_X * age * 255) << 16) +
-      //    ((int)((row + 1) / (float)CELLS_Y * age * 255) << 8) + 255;
       gSPModifyVertex(displayListPtr++, 0, G_MWO_POINT_RGBA, color);
 
       gSP2Triangles(displayListPtr++, 0, 1, 2, 0, 0, 2, 3, 0);
@@ -349,11 +349,11 @@ int neighboursAlive(int gridN, int cellY, int cellX) {
   return aliveNeighbors;
 }
 
-void initGrid() {
+void initGrid(int fillThreshold) {
   int row, col;
   for (row = 0; row < CELLS_Y; ++row) {
     for (col = 0; col < CELLS_X; ++col) {
-      grid[curGrid][row][col].state = RAND(10) > 5;
+      grid[curGrid][row][col].state = RAND(10) > fillThreshold;
       grid[curGrid][row][col].lastChanged = frame;
     }
   }
