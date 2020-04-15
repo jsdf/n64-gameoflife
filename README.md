@@ -1,7 +1,7 @@
 # Conway's Game of Life for Nintendo 64
 
 
-The compiled rom file can be found [here](https://github.com/jsdf/n64-gameoflife/raw/master/gameoflife.n64.zip). It can be run with an emulator or an N64 flashcart. Try pressing the A and B buttons.
+The compiled rom file can be found [here](https://github.com/jsdf/n64-gameoflife/raw/master/gameoflife.zip). It can be run with an emulator or an N64 flashcart. Try pressing the A and B buttons.
 
 ![recording of the demo](https://media.giphy.com/media/dxyCdZR5iKyfod4ihB/giphy.gif)
 
