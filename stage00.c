@@ -75,7 +75,7 @@ void updateGame00() {
   // is initially pressed. The contdata[0].button property is similar, but stays
   // on for the duration of the button press.
   if (contdata[0].trigger & A_BUTTON) {
-    fillThreshold = RAND(8) + 2;
+    fillThreshold = RAND(6) + 2;
     initGrid(fillThreshold);
   }
   if (contdata[0].trigger & B_BUTTON) {
